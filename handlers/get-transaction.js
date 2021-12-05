@@ -1,6 +1,7 @@
 const ddbaccessor = require("../accessors/db-accessor");
 const { isEmpty, isNotBlank } = require("../commons/helper");
 const responses = require("../accessors/responses");
+const { BadRequestError, InternalServerError } = require("../commons/errors");
 
 exports.getTransactionHandler = async (req, res) => {
   const url = req.url;
@@ -9,8 +10,8 @@ exports.getTransactionHandler = async (req, res) => {
   let result;
   console.log(url);
   try {
-    validate(reqParams);
     if (url.includes("/user")) {
+      validate(reqParams);
       // all transcaction of particular user
       result = await ddbaccessor.getAllTransactionsForUser(username);
     } else result = await ddbaccessor.getAllTransactionInDB();

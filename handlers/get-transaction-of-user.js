@@ -1,6 +1,7 @@
 const { isZero, isNotBlank } = require("../commons/helper");
 const ddbaccessor = require("../accessors/db-accessor");
 const responses = require("../accessors/responses");
+const { BadRequestError, InternalServerError } = require("../commons/errors");
 
 exports.getStatisticsOfUserHandler = async (req, res) => {
   const reqParams = req.params;

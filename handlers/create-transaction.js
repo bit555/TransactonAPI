@@ -1,7 +1,7 @@
 const ddbaccessor = require("../accessors/db-accessor");
 const jwt = require("jsonwebtoken");
 const responses = require("../accessors/responses");
-const { BadRequestError } = require("../commons/errors");
+const { BadRequestError, InternalServerError } = require("../commons/errors");
 const {
   isNumber,
   isNotBlank,
