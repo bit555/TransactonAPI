@@ -57,4 +57,8 @@ const ab = [
 
 const br = ab.filter((e) => e.type === "DEBIT");
 
+exports.gg = "hi";
+
+console.log(this.gg);
+
 console.log(br);

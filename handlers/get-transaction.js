@@ -1,37 +1,29 @@
-const transaction = require("../Database/dbModel");
+const ddbaccessor = require("../accessors/db-accessor");
+const { isEmpty, isNotBlank } = require("../commons/helper");
+const responses = require("../accessors/responses");
 
 exports.getTransactionHandler = async (req, res) => {
   const url = req.url;
+  const reqParams = req.params;
+  const username = reqParams.user;
+  let result;
   console.log(url);
+  try {
+    validate(reqParams);
+    if (url.includes("/user")) {
+      // all transcaction of particular user
+      result = await ddbaccessor.getAllTransactionsForUser(username);
+    } else result = await ddbaccessor.getAllTransactionInDB();
 
-  if (req.url === "/") {
-    const alltransaction = await transaction.find().select({
-      username: 1,
-      amount: 1,
-      type: 1,
-      currency: 1,
-      status: 1,
-      timestamp: 1,
-    });
+    if (isEmpty(result)) throw { value: result };
+  } catch (error) {
+    return responses.buildErrorResponse(res, error);
+  }
+  return responses.buildSuccessResponse(res, result);
+};
 
-    res.json(alltransaction);
-  } else if (url.includes("/user")) {
-    // user:user get all transcaction of particular user
-    const reqParams = req.params;
-    const username = reqParams.user;
-    // all trs of pec user
-    const userTransaction = await transaction.find({ username }).select({
-      username: 1,
-      amount: 1,
-      type: 1,
-      currency: 1,
-      status: 1,
-      timestamp: 1,
-    });
-    if (userTransaction.length != 0) {
-      res.json(userTransaction);
-    } else {
-      res.json({ message: "No transactions exist for this user" });
-    }
+const validate = (input) => {
+  if (!isNotBlank(input.user)) {
+    throw new BadRequestError("username is missing");
   }
 };

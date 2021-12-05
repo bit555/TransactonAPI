@@ -1,54 +1,35 @@
-const transaction = require("../Database/dbModel");
+const { isZero, isNotBlank } = require("../commons/helper");
+const ddbaccessor = require("../accessors/db-accessor");
+const responses = require("../accessors/responses");
 
-exports.getTransactionOfUserHandler = async (req, res) => {
+exports.getStatisticsOfUserHandler = async (req, res) => {
   const reqParams = req.params;
   const username = reqParams.user;
-  let debitAmt = 0;
-  let creditAmt = 0;
-  const debitParam = [
-    { $match: { $and: [{ username: username }, { type: "DEBIT" }] } },
-    { $group: { _id: null, sum: { $sum: "$amount" } } },
-  ];
-  const creditParam = [
-    { $match: { $and: [{ username: username }, { type: "CREDIT" }] } },
-    { $group: { _id: null, sum: { $sum: "$amount" } } },
-  ];
-  // seee parser
-  const debitTransaction = await transaction.aggregate(debitParam);
-  console.log(" ====> 11", debitTransaction);
-  // console.log(" =====>", JSON.parse(debitTransaction));
+  let debitAmount;
+  let creditAmount;
+  let balance;
 
-  console.log(" debit amounts ", debitTransaction[0]?.sum);
-  console.log(" debit amounts type ", typeof debitTransaction[0]?.sum);
-  console.log(" debitAmt type ", typeof debitAmt);
-  console.log(" debitAmt Value ", debitAmt);
+  try {
+    validate(reqParams);
+    debitAmount = await ddbaccessor.getSumAmtBasedOnType(username, "DEBIT");
+    creditAmount = await ddbaccessor.getSumAmtBasedOnType(username, "CREDIT");
+    if (isZero(debitAmount) && isZero(creditAmount)) {
+      throw { msg: "user not exists" };
+    } else {
+      balance = {
+        net_balance: creditAmount - debitAmount,
+        credit_amount: creditAmount,
+        debit_amount: debitAmount,
+      };
+    }
+  } catch (error) {
+    return responses.buildErrorResponse(res, error);
+  }
+  return responses.buildSuccessResponse(res, balance);
+};
 
-  debitAmt =
-    typeof debitTransaction[0]?.sum === "number" ? debitTransaction[0]?.sum : 0;
-
-  console.log("  after debitAmt type ", typeof debitAmt);
-  console.log(" afetr  debitAmt Value ", debitAmt);
-  const creditTransaction = await transaction.aggregate(creditParam);
-
-  creditAmt =
-    typeof creditTransaction[0]?.sum === "number"
-      ? creditTransaction[0]?.sum
-      : 0;
-
-  console.log("credit amounts :", creditTransaction[0]?.sum);
-
-  const debit2Transaction = await transaction.aggregate([
-    { $match: { $and: [{ username: username }, { type: "DEBIT" }] } },
-    { $group: { _id: null, sum: { $sum: "$amount" } } },
-  ]);
-  console.log(debit2Transaction[0].sum);
-  if (debitTransaction.length != 0 && creditTransaction.length != 0) {
-    res.json({
-      netBalance: creditAmt - debitAmt,
-      all_credit: creditAmt,
-      all_debit: debitAmt,
-    });
-  } else {
-    res.json({ message: "No such transactions exist for this user" });
+const validate = (input) => {
+  if (!isNotBlank(input.user)) {
+    throw new BadRequestError("username is missing");
   }
 };
