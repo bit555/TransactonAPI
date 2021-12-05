@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 4242;
 const app = express();
 const connectDb = require("./Database/connction");
 
-// connectDb.Dbconnection();
+connectDb.Dbconnection();
 app.use(cors());
 app.use(bodyParser.json());
 
