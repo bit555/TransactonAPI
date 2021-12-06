@@ -1,6 +1,6 @@
 const { selectParam } = require("../commons/constants");
 const { InternalServerError } = require("../commons/errors");
-const { isEmpty, errorMsg, isNumber, isZero } = require("../commons/helper");
+const { isEmpty, isNumber, isZero } = require("../commons/helper");
 const transaction = require("../Database/dbModel");
 
 exports.getAllTransactionInDB = async () => {

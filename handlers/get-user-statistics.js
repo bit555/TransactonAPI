@@ -3,7 +3,7 @@ const ddbaccessor = require("../accessors/db-accessor");
 const responses = require("../accessors/responses");
 const { BadRequestError, InternalServerError } = require("../commons/errors");
 
-exports.getStatisticsOfUserHandler = async (req, res) => {
+exports.getUserStatisticsHandler = async (req, res) => {
   const reqParams = req.params;
   const username = reqParams.user;
   let debitAmount;
@@ -15,12 +15,12 @@ exports.getStatisticsOfUserHandler = async (req, res) => {
     debitAmount = await ddbaccessor.getSumAmtBasedOnType(username, "DEBIT");
     creditAmount = await ddbaccessor.getSumAmtBasedOnType(username, "CREDIT");
     if (isZero(debitAmount) && isZero(creditAmount)) {
-      throw { msg: "user not exists" };
+      throw InternalServerError("user not exists");
     } else {
       balance = {
         net_balance: creditAmount - debitAmount,
-        credit_amount: creditAmount,
-        debit_amount: debitAmount,
+        amount_credited: creditAmount,
+        amount_debited: debitAmount,
       };
     }
   } catch (error) {

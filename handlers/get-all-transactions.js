@@ -3,20 +3,26 @@ const { isEmpty, isNotBlank } = require("../commons/helper");
 const responses = require("../accessors/responses");
 const { BadRequestError, InternalServerError } = require("../commons/errors");
 
-exports.getTransactionHandler = async (req, res) => {
+exports.getAllTransactionsHandler = async (req, res) => {
   const url = req.url;
   const reqParams = req.params;
   const username = reqParams.user;
   let result;
   console.log(url);
   try {
+    // all transcactions of particular user
+
     if (url.includes("/user")) {
       validate(reqParams);
-      // all transcaction of particular user
       result = await ddbaccessor.getAllTransactionsForUser(username);
-    } else result = await ddbaccessor.getAllTransactionInDB();
+    }
+    // all transcactions of All users in database
+    if (url === "/all") result = await ddbaccessor.getAllTransactionInDB();
 
-    if (isEmpty(result)) throw { value: result };
+    if (isEmpty(result))
+      throw InternalServerError(
+        "Error! database is empty ! please add some transactions"
+      );
   } catch (error) {
     return responses.buildErrorResponse(res, error);
   }

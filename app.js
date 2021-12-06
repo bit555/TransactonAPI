@@ -10,9 +10,9 @@ connectDb.Dbconnection();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get("/user/:user/statistics", handlers.getStatisticsOfUserHandler);
-app.get("/user/:user", handlers.getTransactionHandler);
-app.get("/", handlers.getTransactionHandler);
+app.get("/user/:user/statistics", handlers.getUserStatisticsHandler);
+app.get("/user/:user", handlers.getAllTransactionsHandler);
+app.get("/all", handlers.getAllTransactionsHandler);
 
 app.post(
   "/doTransaction",

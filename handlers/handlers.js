@@ -1,12 +1,12 @@
 const createTransactionHandler = require("./create-transaction");
-const getTransactionHandler = require("./get-transaction");
-const getStatisticsOfUserHandler = require("./get-transaction-of-user");
+const getAllTransactionsHandler = require("./get-all-transactions");
+const getUserStatisticsHandler = require("./get-user-statistics");
 const loginHandler = require("./login");
 const verifyHandler = require("./verify");
 module.exports = {
   ...createTransactionHandler,
-  ...getTransactionHandler,
-  ...getStatisticsOfUserHandler,
+  ...getAllTransactionsHandler,
+  ...getUserStatisticsHandler,
   ...loginHandler,
   ...verifyHandler,
 };
