@@ -17,10 +17,10 @@ exports.getAllTransactionsHandler = async (req, res) => {
       result = await ddbaccessor.getAllTransactionsForUser(username);
     }
     // all transcactions of All users in database
-    if (url === "/all") result = await ddbaccessor.getAllTransactionInDB();
+    else result = await ddbaccessor.getAllTransactionInDB();
 
     if (isEmpty(result))
-      throw InternalServerError(
+      throw new InternalServerError(
         "Error! database is empty ! please add some transactions"
       );
   } catch (error) {

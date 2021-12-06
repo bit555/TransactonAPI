@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 app.get("/user/:user/statistics", handlers.getUserStatisticsHandler);
 app.get("/user/:user", handlers.getAllTransactionsHandler);
-app.get("/all", handlers.getAllTransactionsHandler);
+app.get("/", handlers.getAllTransactionsHandler);
 
 app.post(
   "/doTransaction",
